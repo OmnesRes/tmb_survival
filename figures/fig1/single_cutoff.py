@@ -15,17 +15,19 @@ import pickle
 
 # tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
 # tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'rb'))
+# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'rb'))
 
+##need to sort
+indexes = np.argsort(tmb)
+tmb = np.sort(tmb)
 best_index = {}
 for choice in range(15):
     print(choice)
     times = [i[0][choice] for i in times_events]
     events = [i[1][choice] for i in times_events]
 
-    times = np.array(times)
-    events = np.array(events)
-
+    times = np.array(times)[indexes]
+    events = np.array(events)[indexes]
     stats = []
     offset = 25
     for index, cutoff in enumerate(tmb[offset: -offset]):
@@ -35,6 +37,5 @@ for choice in range(15):
     best_index[choice] = cutoff
 
 
-
-# with open(cwd / 'figures' / 'cutoffs' / 'sim' / 'single_cutoff_linear.pkl', 'wb') as f:
-#     pickle.dump(best_index, f)
+with open(cwd / 'figures' / 'fig1' / 'single_cutoff_nonmonotonic.pkl', 'wb') as f:
+    pickle.dump(best_index, f)

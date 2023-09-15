@@ -1,22 +1,26 @@
-from matplotlib import pyplot as plt
-from lifelines import KaplanMeierFitter
-from figures.sim_tools import *
-# import pandas as pd
-from tqdm import tqdm
-import concurrent.futures
-from lifelines.statistics import logrank_test
-import pickle
 import pathlib
 path = pathlib.Path.cwd()
-if path.stem == 'tmb_surv':
+if path.stem == 'tmb_survival':
     cwd = path
 else:
-    cwd = list(path.parents)[::-1][path.parts.index('tmb_surv')]
+    cwd = list(path.parents)[::-1][path.parts.index('tmb_survival')]
     import sys
     sys.path.append(str(cwd))
+from tqdm import tqdm
+import concurrent.futures
+import numpy as np
+from lifelines.statistics import logrank_test
+import pickle
 
-# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'cutoffs' / 'sim' / 'linear_data.pkl', 'rb'))
-# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'cutoffs' / 'sim' / 'nonmonotonic_data.pkl', 'rb'))
+
+# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
+# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'rb'))
+
+
+##need to sort
+indexes = np.argsort(tmb)
+tmb = np.sort(tmb)
 
 def get_statistic(index):
     stats = []
@@ -33,8 +37,8 @@ for choice in range(15):
     times = [i[0][choice] for i in times_events]
     events = [i[1][choice] for i in times_events]
 
-    times = np.array(times)
-    events = np.array(events)
+    times = np.array(times)[indexes]
+    events = np.array(events)[indexes]
 
     stats = {}
     offset = 25
@@ -55,8 +59,11 @@ for choice in range(15):
     best_indexes[choice] = [index, index2]
 
 
-# with open(cwd / 'figures' / 'cutoffs' / 'sim' / 'two_cutoffs_linear.pkl', 'wb') as f:
-#     pickle.dump(best_indexes, f)
+with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_linear.pkl', 'wb') as f:
+    pickle.dump(best_indexes, f)
 
-# with open(cwd / 'figures' / 'cutoffs' / 'sim' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
-#     pickle.dump(best_indexes, f)
+with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
+    pickle.dump(best_indexes, f)
+
+with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_step.pkl', 'wb') as f:
+    pickle.dump(best_indexes, f)
