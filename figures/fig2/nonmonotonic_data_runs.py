@@ -148,5 +148,5 @@ for idx_train, idx_test in StratifiedKFold(n_splits=10, random_state=0, shuffle=
 
 results['2-neuron'] = [test_ranks, all_risks]
 
-with open(cwd / 'figures' / 'fig2' / 'nonmonotonic_runs.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_runs.pkl', 'wb') as f:
     pickle.dump([test_idx, results], f)

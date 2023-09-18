@@ -110,7 +110,6 @@ for idx_train, idx_test in StratifiedKFold(n_splits=10, random_state=0, shuffle=
 results['sigmoid'] = [test_ranks, all_risks]
 
 
-
 ##two neuron
 test_ranks = []
 all_risks = []
