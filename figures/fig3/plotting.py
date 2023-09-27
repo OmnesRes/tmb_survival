@@ -26,7 +26,7 @@ tmb_dict = {i[:12]: data[i][0] / (data[i][1] / 1e6) for i in data}
 samples['tmb'] = samples.bcr_patient_barcode.apply(lambda x: tmb_dict.get(x, np.nan))
 samples.dropna(axis=0, subset=['OS', 'OS.time', 'tmb'], inplace=True)
 
-label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2-neuron': '2 Neuron'}
+label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2neuron': '2 Neuron'}
 t = utils.LogTransform(bias=4, min_x=0)
 cph = CoxPHFitter()
 
@@ -41,9 +41,9 @@ for cancer in labels_to_use:
     fig = plt.figure()
     ax = fig.add_subplot(111)
     fig.subplots_adjust(bottom=.129)
-    fig.subplots_adjust(top=1)
+    fig.subplots_adjust(top=.95)
     fig.subplots_adjust(left=.04)
-    fig.subplots_adjust(right=1)
+    fig.subplots_adjust(right=.98)
     cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
     ax.plot(tmb, tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]), linewidth=2, alpha=.5, label='Cox')
     for model in ['FCN', '2neuron', 'sigmoid']:
@@ -57,28 +57,67 @@ for cancer in labels_to_use:
         overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
         indexes = np.argsort(tmb)
         ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+    if max(t.inv(tmb) > 128):
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 80, 160, 256])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 40, 80, 160, 256])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(256))
+        ax.set_xlim(t.trf(0), t.trf(256))
         
-# ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 64])))
-# ax.set_xticklabels([0, 2, 5, 10, 20, 40, 64])
-ax.set_yticks([])
-ax.tick_params(axis='y', length=0, width=0, direction='out', labelsize=10)
-ax.tick_params(axis='x', length=8, width=1, direction='out', labelsize=10)
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_position(['outward', 5])
-ax.spines['bottom'].set_linewidth(1)
-ax.spines['left'].set_linewidth(1)
-# ax.spines['bottom'].set_bounds(t.trf(0), t.trf(64))
-ax.set_xlabel('TMB', fontsize=12)
-ax.set_ylabel('Log Partial Hazard', fontsize=12)
-ax.set_title(cancer)
-sns.rugplot(data=tmb, ax=ax, alpha=.5, color='#1f77b4')
-plt.legend(frameon=False)
-plt.show()
-
-# plt.savefig(cwd / 'figures' / 'fig2' / 'linear_data.pdf')
-
-
-
+    elif max(t.inv(tmb) > 80):
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 100])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 40, 100])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(100))
+        ax.set_xlim(t.trf(0), t.trf(100))
+        
+    elif max(t.inv(tmb) > 64):
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 80])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 40, 80])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(80))
+        ax.set_xlim(t.trf(0), t.trf(80))
+    
+    elif max(t.inv(tmb) > 20):
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 40])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(40))
+        ax.set_xlim(t.trf(0), t.trf(40))
+    
+    elif max(t.inv(tmb) > 10):
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 18])))
+        ax.set_xticklabels([0, 2, 5, 10, 18])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(18))
+        ax.set_xlim(t.trf(0), t.trf(18))
+    
+    elif max(t.inv(tmb) > 5):
+        ax.set_xticks(t.trf(np.array([0, 1, 3, 6, 10])))
+        ax.set_xticklabels([0, 1, 3, 6, 10])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(10))
+        ax.set_xlim(t.trf(0), t.trf(10))
+    
+    elif max(t.inv(tmb) > 3):
+        ax.set_xticks(t.trf(np.array([0, 1, 2, 3, 4, 5])))
+        ax.set_xticklabels([0, 1, 2, 3, 4, 5])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(5))
+        ax.set_xlim(t.trf(0), t.trf(5))
+    
+    else:
+        ax.set_xticks(t.trf(np.array([0, 1, 2, 3])))
+        ax.set_xticklabels([0, 1, 2, 3])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(3))
+        ax.set_xlim(t.trf(0), t.trf(3))
+        
+    ax.set_yticks([])
+    ax.tick_params(axis='y', length=0, width=0, direction='out', labelsize=10)
+    ax.tick_params(axis='x', length=8, width=1, direction='out', labelsize=10)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_position(['outward', 5])
+    ax.spines['bottom'].set_linewidth(1)
+    ax.spines['left'].set_linewidth(1)
+    ax.set_xlabel('TMB', fontsize=12)
+    ax.set_ylabel('Log Partial Hazard', fontsize=12)
+    ax.set_title(cancer)
+    sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
+    plt.legend(frameon=False, loc='upper center', ncol=4)
+    plt.savefig(cwd / 'figures' / 'fig3' / (cancer + '.pdf'))
 
