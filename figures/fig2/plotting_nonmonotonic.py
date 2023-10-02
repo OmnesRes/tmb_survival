@@ -32,14 +32,13 @@ cph = CoxPHFitter()
 fig = plt.figure()
 ax = fig.add_subplot(111)
 fig.subplots_adjust(bottom=.129)
-fig.subplots_adjust(top=1)
+fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 ax.plot(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], linewidth=2, label='True', color='k')
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in results:
-
+for model in ['FCN', '2-neuron', 'sigmoid']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -49,7 +48,6 @@ for model in results:
         losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': risks[idx_test][:, 0]})))
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
-    
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
     ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
     
@@ -68,7 +66,9 @@ ax.spines['bottom'].set_bounds(t.trf(0), t.trf(64))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
-plt.legend(frameon=False)
+ax.set_ylim(-.9, 1.75)
+ax.set_title('Nonmonotonic Data')
+plt.legend(frameon=False, loc='upper left', ncol=5)
 plt.savefig(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pdf')
 
 # ###cox

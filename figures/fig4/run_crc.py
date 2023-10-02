@@ -28,7 +28,7 @@ df.dropna(axis=0, subset=['OS', 'OS.days', 'mean_tmb'], inplace=True)
 
 tmb = df['mean_tmb'].values
 df = df.loc[tmb < np.percentile(tmb, 99)]
-tmb = t.trf(df.mean_tmb)[:, np.newaxis]
+tmb = t.trf(df.mean_tmb.values)[:, np.newaxis]
 times = df['OS.days'].values[:, np.newaxis]
 events = df['OS'].values[:, np.newaxis]
 cancer_strat = np.zeros_like(df['mean_tmb']) ##no cancer info
