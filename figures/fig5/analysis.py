@@ -156,7 +156,7 @@ plt.show()
 
 ##kaplans
 
-for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
+for index, cancer in enumerate(['BLCA', 'COAD', 'SARC', 'SKCM']):
     df = samples.loc[samples['type'] == cancer]
     tmb = df['tmb'].values
     df = df.loc[tmb < np.percentile(tmb, 99)]
@@ -174,9 +174,9 @@ for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
 
     fig = plt.figure()
     fig.subplots_adjust(bottom=.11)
-    fig.subplots_adjust(top=.98)
-    fig.subplots_adjust(left=.099)
-    fig.subplots_adjust(right=.969)
+    fig.subplots_adjust(top=.95)
+    fig.subplots_adjust(left=.115)
+    fig.subplots_adjust(right=.95)
     kmf = KaplanMeierFitter()
     ax = fig.add_subplot(111)
     kmf.fit(low_times, low_events, label='Low Risk').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5})
@@ -184,6 +184,7 @@ for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
     ax.set_ylim(0, 1.05)
     ax.tick_params(axis='x', length=7, width=1, direction='out', labelsize=12)
     ax.tick_params(axis='y', length=7, width=1, direction='out', labelsize=12)
+    ax.set_yticklabels([0, 20, 40, 60, 80, 100])
     ax.set_xticks([np.arange(0, 6000, 1000), np.arange(0, 6000, 1000), np.arange(0, 7000, 1000), np.arange(0, 14000, 2000)][index])
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -194,6 +195,7 @@ for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
     ax.set_xlabel('Days', fontsize=12)
     ax.set_ylabel('% Surviving', fontsize=12)
     plt.legend(frameon=False)
+    ax.set_title(cancer)
     ax.text(.0, .97, 'Logrank p-value=%.1E' % p_value, transform=ax.transAxes)
     plt.savefig(cwd / 'figures' / 'fig5' / (cancer + '_model.pdf'))
 
@@ -207,9 +209,9 @@ for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
 
     fig = plt.figure()
     fig.subplots_adjust(bottom=.11)
-    fig.subplots_adjust(top=.98)
-    fig.subplots_adjust(left=.099)
-    fig.subplots_adjust(right=.969)
+    fig.subplots_adjust(top=.95)
+    fig.subplots_adjust(left=.115)
+    fig.subplots_adjust(right=.95)
     kmf = KaplanMeierFitter()
     ax = fig.add_subplot(111)
     kmf.fit(low_times, low_events, label='Low TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5})
@@ -217,6 +219,7 @@ for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
     ax.set_ylim(0, 1.05)
     ax.tick_params(axis='x', length=7, width=1, direction='out', labelsize=12)
     ax.tick_params(axis='y', length=7, width=1, direction='out', labelsize=12)
+    ax.set_yticklabels([0, 20, 40, 60, 80, 100])
     ax.set_xticks([np.arange(0, 6000, 1000), np.arange(0, 6000, 1000), np.arange(0, 7000, 1000), np.arange(0, 14000, 2000)][index])
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -227,6 +230,7 @@ for index, cancer in enumerate(['BLCA', 'KIRC', 'SARC', 'SKCM']):
     ax.set_xlabel('Days', fontsize=12)
     ax.set_ylabel('% Surviving', fontsize=12)
     plt.legend(frameon=False)
+    ax.set_title(cancer)
     ax.text(.0, .97, 'Logrank p-value=%.1E' % p_value, transform=ax.transAxes)
     plt.savefig(cwd / 'figures' / 'fig5' / (cancer + '_tmb.pdf'))
 

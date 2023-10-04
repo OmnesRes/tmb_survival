@@ -32,5 +32,5 @@ tmb = t.trf(tmb)
 sim_risks = [0 if i <= np.median(tmb) else 1 for i in tmb]
 times_events = [generate_times(risk=i) for i in sim_risks]
 
-with open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'supp_fig2' / 'step_data.pkl', 'wb') as f:
     pickle.dump([tmb, sim_risks, times_events], f)

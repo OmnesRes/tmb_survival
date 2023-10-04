@@ -18,7 +18,7 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[-1], True)
 tf.config.experimental.set_visible_devices(physical_devices[-1], 'GPU')
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'supp_fig2' / 'step_data.pkl', 'rb'))
 times = np.array([i[0][0] for i in times_events])
 events = np.array([i[1][0] for i in times_events])
 tmb = tmb[:, np.newaxis]
@@ -148,5 +148,5 @@ for idx_train, idx_test in StratifiedKFold(n_splits=10, random_state=0, shuffle=
 
 results['2-neuron'] = [test_ranks, all_risks]
 
-with open(cwd / 'figures' / 'fig2' / 'step_data_runs.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'supp_fig2' / 'step_data_runs.pkl', 'wb') as f:
     pickle.dump([test_idx, results], f)

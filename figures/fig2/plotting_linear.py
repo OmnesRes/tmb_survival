@@ -37,7 +37,7 @@ fig.subplots_adjust(right=1)
 ax.plot(tmb, sim_risks - np.mean(sim_risks), linewidth=2, label='True', color='k')
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(tmb, tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]), linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron', 'sigmoid']:
+for model in ['FCN', '2-neuron']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -67,7 +67,7 @@ ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_title('Linear Data')
-plt.legend(frameon=False, loc='upper left', ncol=5)
+plt.legend(frameon=False, loc='upper center', ncol=5)
 plt.savefig(cwd / 'figures' / 'fig2' / 'linear_data.pdf')
 
 

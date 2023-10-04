@@ -17,12 +17,12 @@ import seaborn as sns
 
 t = utils.LogTransform(bias=4, min_x=0)
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'supp_fig2' / 'step_data.pkl', 'rb'))
 indexes = np.argsort(tmb)
 times = np.array([i[0][0] for i in times_events])
 events = np.array([i[1][0] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'step_data_runs.pkl', 'rb'))
+test_idx, results = pickle.load(open(cwd / 'figures' / 'supp_fig2' / 'step_data_runs.pkl', 'rb'))
 
 label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2-neuron': '2 Neuron'}
 
@@ -71,7 +71,7 @@ sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_ylim(-.75, 1)
 ax.set_title('Step Data')
 plt.legend(frameon=False, loc='upper left', ncol=5)
-plt.savefig(cwd / 'figures' / 'fig2' / 'step_data.pdf')
+plt.savefig(cwd / 'figures' / 'supp_fig2' / 'step_data.pdf')
 
 # ###cox
 # cox_losses = []
