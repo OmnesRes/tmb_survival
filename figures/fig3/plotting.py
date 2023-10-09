@@ -15,7 +15,7 @@ from model import utils
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LAML', 'LGG', 'LIHC', 'LUAD', 'LUSC', 'OV', 'PAAD', 'SARC', 'SKCM', 'STAD', 'UCEC']
+labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LGG', 'LIHC', 'LUAD', 'LUSC', 'OV', 'PAAD', 'SKCM', 'STAD', 'UCEC']
 
 data = pickle.load(open(cwd / 'files' / 'data.pkl', 'rb'))
 samples = pickle.load(open(cwd / 'files' / 'tcga_public_sample_table.pkl', 'rb'))

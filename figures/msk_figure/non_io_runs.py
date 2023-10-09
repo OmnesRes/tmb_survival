@@ -23,7 +23,7 @@ tf.config.experimental.set_visible_devices(physical_devices[-1], 'GPU')
 
 t = utils.LogTransform(bias=4, min_x=0)
 
-#from: https://www.nature.com/articles/s41588-020-00752-4
+#from: https://www.nature.com/articles/s41588-020-00752-4, https://zenodo.org/record/4074184
 df = pd.read_csv(cwd / 'figures' / 'msk_figure'/ 'data' / 'TMB_public.csv', sep=',', low_memory=False)
 df = df.loc[df['Type of ICI treatment'] == 'Never received ICI']
 df['OS'] = (df['Vital status'] == 'DECEASED').astype(np.int32)
@@ -176,6 +176,6 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
 
     results['2-neuron'] = [test_ranks, all_risks]
 
-    with open(cwd / 'figures' / 'msk_figure' / (cancer + '_nat_gen.pkl'), 'wb') as f:
+    with open(cwd / 'figures' / 'msk_figure' / (cancer + '_non_io.pkl'), 'wb') as f:
         pickle.dump([test_idx, results], f)
 
