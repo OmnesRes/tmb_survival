@@ -16,12 +16,12 @@ from matplotlib import pyplot as plt
 
 t = utils.LogTransform(bias=4, min_x=0)
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'step_data.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
 indexes = np.argsort(tmb)
-times = np.array([i[0][0] for i in times_events])
-events = np.array([i[1][0] for i in times_events])
+times = np.array([i[0][4] for i in times_events])
+events = np.array([i[1][4] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'step_data_runs.pkl', 'rb'))
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_runs_4.pkl', 'rb'))
 
 cph = CoxPHFitter()
 for model in results:

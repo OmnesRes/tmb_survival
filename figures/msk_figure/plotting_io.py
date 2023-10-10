@@ -16,7 +16,6 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 t = utils.LogTransform(bias=4, min_x=0)
-label_dict = {'FCN': 'FCN', '2-neuron': '2 Neuron'}
 cph = CoxPHFitter()
 
 df = pd.read_csv(cwd / 'figures' / 'msk_figure'/ 'data' / '41588_2018_312_MOESM3_ESM.csv', sep=',', low_memory=False, skiprows=1)
@@ -44,7 +43,7 @@ fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron']:
+for model in ['FCN']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -55,10 +54,10 @@ for model in ['FCN', '2-neuron']:
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     
-ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 50, 100])))
-ax.set_xticklabels([0, 2, 5, 10, 20, 50, 100])
+ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 80, 140])))
+ax.set_xticklabels([0, 2, 5, 10, 20, 40, 80, 140])
 ax.set_yticks([])
 ax.tick_params(axis='y', length=0, width=0, direction='out', labelsize=10)
 ax.tick_params(axis='x', length=8, width=1, direction='out', labelsize=10)
@@ -68,13 +67,13 @@ ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_position(['outward', 5])
 ax.spines['bottom'].set_linewidth(1)
 ax.spines['left'].set_linewidth(1)
-ax.spines['bottom'].set_bounds(t.trf(0), t.trf(100))
+ax.spines['bottom'].set_bounds(t.trf(0), t.trf(140))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
-ax.set_title('MSK SKCM IO')
+ax.set_title('Melanoma IO')
 plt.legend(frameon=False, loc='upper center', ncol=4)
-plt.show()
+plt.savefig(cwd / 'figures' / 'msk_figure' / 'melanoma_io.pdf')
 
 df = pd.read_csv(cwd / 'figures' / 'msk_figure'/ 'data' / '41588_2018_312_MOESM3_ESM.csv', sep=',', low_memory=False, skiprows=1)
 ##limit to Melanoma
@@ -100,7 +99,7 @@ fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron']:
+for model in ['FCN']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -111,7 +110,7 @@ for model in ['FCN', '2-neuron']:
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 50])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 50])
@@ -128,10 +127,9 @@ ax.spines['bottom'].set_bounds(t.trf(0), t.trf(50))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
-ax.set_title('MSK NSCLC IO')
+ax.set_title('NSCLC IO (2019)')
 plt.legend(frameon=False, loc='upper center', ncol=4)
-plt.show()
-
+plt.savefig(cwd / 'figures' / 'msk_figure' / 'nsclc_io_2019.pdf')
 
 
 #from: https://www.nature.com/articles/s41588-020-00752-4, https://zenodo.org/record/4074184
@@ -157,7 +155,7 @@ fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron']:
+for model in ['FCN']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -168,7 +166,7 @@ for model in ['FCN', '2-neuron']:
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 50])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 50])
@@ -185,9 +183,9 @@ ax.spines['bottom'].set_bounds(t.trf(0), t.trf(50))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
-ax.set_title('MSK NSCLC IO 2021')
+ax.set_title('NSCLC IO (2021)')
 plt.legend(frameon=False, loc='upper center', ncol=4)
-plt.show()
+plt.savefig(cwd / 'figures' / 'msk_figure' / 'nsclc_io_2021.pdf')
 
 
 

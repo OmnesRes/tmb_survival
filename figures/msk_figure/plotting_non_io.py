@@ -16,7 +16,6 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 t = utils.LogTransform(bias=4, min_x=0)
-label_dict = {'FCN': 'FCN', '2-neuron': '2 Neuron'}
 cph = CoxPHFitter()
 
 df = pd.read_csv(cwd / 'figures' / 'msk_figure'/ 'data' / 'TMB_public.csv', sep=',', low_memory=False)
@@ -25,7 +24,7 @@ df['OS'] = (df['Vital status'] == 'DECEASED').astype(np.int32)
 
 
 
-for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
+for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Endometrial']:
     cancer_df = df.loc[df['Cancer type'] == cancer]
     tmb = cancer_df['TMB (mutations/Mb)'].values
     cancer_df = cancer_df.loc[tmb < np.percentile(tmb, 99)]
@@ -33,8 +32,7 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
     times = cancer_df['Overall Survival from diagnosis (Months)'].values
     events = cancer_df['OS'].values
     indexes = np.argsort(tmb)
-    test_idx, results = pickle.load(open(cwd / 'figures' / 'msk_figure' / (cancer + '_nat_gen.pkl'), 'rb'))
-
+    test_idx, results = pickle.load(open(cwd / 'figures' / 'msk_figure' / (cancer + '_non_io.pkl'), 'rb'))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -44,7 +42,7 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
     fig.subplots_adjust(right=1)
     cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
     ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-    for model in ['FCN', '2-neuron']:
+    for model in ['FCN']:
         losses = []
         normed_risks = []
         for idx_test, risks in zip(test_idx, results[model][1]):
@@ -55,10 +53,24 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
             normed_risks.append(risks[:, 0] * cph.params_[0])
         print(np.mean(losses))
         overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-        ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
-        
-    ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 50, 100])))
-    ax.set_xticklabels([0, 2, 5, 10, 20, 50, 100])
+        ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
+    
+    if cancer == 'NSCLC':
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 40])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(40))
+    elif cancer == 'Colorectal':
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 60, 120])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 60, 120])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(120))
+    elif cancer == 'Pancreatic':
+        ax.set_xticks(t.trf(np.array([0, 2, 4, 6, 11])))
+        ax.set_xticklabels([0, 2, 4, 6, 11])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(11))
+    else:
+        ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 80, 160, 320])))
+        ax.set_xticklabels([0, 2, 5, 10, 20, 40, 80, 160, 320])
+        ax.spines['bottom'].set_bounds(t.trf(0), t.trf(320))
     ax.set_yticks([])
     ax.tick_params(axis='y', length=0, width=0, direction='out', labelsize=10)
     ax.tick_params(axis='x', length=8, width=1, direction='out', labelsize=10)
@@ -68,10 +80,9 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
     ax.spines['bottom'].set_position(['outward', 5])
     ax.spines['bottom'].set_linewidth(1)
     ax.spines['left'].set_linewidth(1)
-    ax.spines['bottom'].set_bounds(t.trf(0), t.trf(100))
     ax.set_xlabel('TMB', fontsize=12)
     ax.set_ylabel('Log Partial Hazard', fontsize=12)
     sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
-    ax.set_title(cancer)
+    ax.set_title(cancer + " NonIO")
     plt.legend(frameon=False, loc='upper center', ncol=4)
-    plt.show()
+    plt.savefig(cwd / 'figures' / 'msk_figure' / (cancer + '_nonio.pdf'))

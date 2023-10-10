@@ -19,13 +19,10 @@ t = utils.LogTransform(bias=4, min_x=0)
 
 tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
 indexes = np.argsort(tmb)
-times = np.array([i[0][0] for i in times_events])
-events = np.array([i[1][0] for i in times_events])
+times = np.array([i[0][4] for i in times_events])
+events = np.array([i[1][4] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_runs.pkl', 'rb'))
-
-label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2-neuron': '2 Neuron'}
-
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_runs_4.pkl', 'rb'))
 
 cph = CoxPHFitter()
 
@@ -38,7 +35,7 @@ fig.subplots_adjust(right=1)
 ax.plot(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], linewidth=2, label='True', color='k')
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron']:
+for model in ['FCN']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -49,7 +46,7 @@ for model in ['FCN', '2-neuron']:
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 64])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 40, 64])
@@ -69,7 +66,7 @@ sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_ylim(-.9, 1.75)
 ax.set_title('Nonmonotonic Data')
 plt.legend(frameon=False, loc='upper center', ncol=5)
-plt.savefig(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pdf')
+plt.savefig(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_4.pdf')
 
 # ###cox
 # cox_losses = []

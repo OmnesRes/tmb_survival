@@ -26,7 +26,6 @@ tmb_dict = {i[:12]: data[i][0] / (data[i][1] / 1e6) for i in data}
 samples['tmb'] = samples.bcr_patient_barcode.apply(lambda x: tmb_dict.get(x, np.nan))
 samples.dropna(axis=0, subset=['OS', 'OS.time', 'tmb'], inplace=True)
 
-label_dict = {'FCN': 'FCN', '2neuron': '2 Neuron'}
 t = utils.LogTransform(bias=4, min_x=0)
 cph = CoxPHFitter()
 
@@ -46,7 +45,7 @@ for cancer in labels_to_use:
     fig.subplots_adjust(right=.98)
     cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
     ax.plot(tmb, tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]), linewidth=2, alpha=.5, label='Cox')
-    for model in ['FCN', '2neuron']:
+    for model in ['FCN']:
         test_idx, test_ranks, all_risks = pickle.load(open(cwd / 'figures' / 'fig3' / (model + '_runs.pkl'), 'rb'))[cancer]
         normed_risks = []
         for idx_test, risks in zip(test_idx, all_risks):
@@ -56,7 +55,7 @@ for cancer in labels_to_use:
             normed_risks.append(risks[:, 0] * cph.params_[0])
         overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
         indexes = np.argsort(tmb)
-        ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+        ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     if max(t.inv(tmb) > 128):
         ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 80, 160, 256])))
         ax.set_xticklabels([0, 2, 5, 10, 20, 40, 80, 160, 256])

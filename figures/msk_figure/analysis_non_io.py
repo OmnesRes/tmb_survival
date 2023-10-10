@@ -33,7 +33,7 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Sarcoma', 'Endometrial']:
     events = cancer_df['OS'].values
     print(len(cancer_df))
 
-    test_idx, results = pickle.load(open(cwd / 'figures' / 'msk_figure' / (cancer + '_nat_gen.pkl'), 'rb'))
+    test_idx, results = pickle.load(open(cwd / 'figures' / 'msk_figure' / (cancer + '_non_io.pkl'), 'rb'))
 
     cox_losses = []
     for idx_test in test_idx:

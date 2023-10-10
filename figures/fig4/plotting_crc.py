@@ -16,7 +16,6 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 t = utils.LogTransform(bias=4, min_x=0)
-label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2-neuron': '2 Neuron'}
 cph = CoxPHFitter()
 
 ##io data
@@ -38,10 +37,10 @@ ax = fig.add_subplot(111)
 fig.subplots_adjust(bottom=.129)
 fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
-fig.subplots_adjust(right=1)
+fig.subplots_adjust(right=.98)
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron', 'sigmoid']:
+for model in ['FCN']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -52,7 +51,7 @@ for model in ['FCN', '2-neuron', 'sigmoid']:
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
+    ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 50, 100])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 50, 100])
@@ -69,6 +68,6 @@ ax.spines['bottom'].set_bounds(t.trf(0), t.trf(100))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
-ax.set_title('NonIO data')
+ax.set_title('COAD NonIO data')
 plt.legend(frameon=False, loc='upper center', ncol=4)
 plt.savefig(cwd / 'figures' / 'fig4' / 'crc_nonio_data.pdf')

@@ -18,12 +18,10 @@ import seaborn as sns
 t = utils.LogTransform(bias=4, min_x=0)
 
 tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
-times = np.array([i[0][0] for i in times_events])
-events = np.array([i[1][0] for i in times_events])
+times = np.array([i[0][4] for i in times_events])
+events = np.array([i[1][4] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'linear_data_runs.pkl', 'rb'))
-
-label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2-neuron': '2 Neuron'}
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'linear_data_runs_4.pkl', 'rb'))
 
 
 cph = CoxPHFitter()
@@ -37,7 +35,7 @@ fig.subplots_adjust(right=1)
 ax.plot(tmb, sim_risks - np.mean(sim_risks), linewidth=2, label='True', color='k')
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(tmb, tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]), linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron']:
+for model in ['FCN']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -49,7 +47,7 @@ for model in ['FCN', '2-neuron']:
     print(np.mean(losses))
     
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks, linewidth=2, alpha=.5, label=label_dict[model])
+    ax.plot(np.sort(tmb), overall_risks, linewidth=2, alpha=.5, label=model)
     
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 64])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 40, 64])
@@ -68,7 +66,7 @@ ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_title('Linear Data')
 plt.legend(frameon=False, loc='upper center', ncol=5)
-plt.savefig(cwd / 'figures' / 'fig2' / 'linear_data.pdf')
+plt.savefig(cwd / 'figures' / 'fig2' / 'linear_data_4.pdf')
 
 
 
