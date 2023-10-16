@@ -12,9 +12,7 @@ from figures.sim_tools import *
 from lifelines.statistics import logrank_test
 import pickle
 
-
-# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
-# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'supp_fig2' / 'step_data.pkl', 'rb'))
 
 ##need to sort
 indexes = np.argsort(tmb)
@@ -36,5 +34,5 @@ for choice in range(15):
     best_index[choice] = cutoff
 
 
-with open(cwd / 'figures' / 'fig1' / 'single_cutoff_nonmonotonic.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'supp_fig2' / 'single_cutoff_step.pkl', 'wb') as f:
     pickle.dump(best_index, f)

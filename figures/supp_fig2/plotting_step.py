@@ -24,7 +24,7 @@ events = np.array([i[1][0] for i in times_events])
 
 test_idx, results = pickle.load(open(cwd / 'figures' / 'supp_fig2' / 'step_data_runs.pkl', 'rb'))
 
-label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid', '2-neuron': '2 Neuron'}
+label_dict = {'FCN': 'FCN', 'sigmoid': 'Sigmoid'}
 
 
 cph = CoxPHFitter()
@@ -38,8 +38,7 @@ fig.subplots_adjust(right=1)
 ax.plot(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], linewidth=2, label='True', color='k')
 cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
 ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
-for model in ['FCN', '2-neuron', 'sigmoid']:
-
+for model in ['FCN', 'sigmoid']:
     losses = []
     normed_risks = []
     for idx_test, risks in zip(test_idx, results[model][1]):
@@ -70,31 +69,8 @@ ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_ylim(-.75, 1)
 ax.set_title('Step Data')
-plt.legend(frameon=False, loc='upper left', ncol=5)
+plt.legend(frameon=False, loc='upper center', ncol=5)
 plt.savefig(cwd / 'figures' / 'supp_fig2' / 'step_data.pdf')
-
-# ###cox
-# cox_losses = []
-# for idx_test in test_idx:
-#     mask = np.ones(len(risks), dtype=bool)
-#     mask[idx_test] = False
-#     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
-#     cox_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': tmb[idx_test]})))
-# print(np.mean(cox_losses))
-
-# print(cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x').concordance_index_)
-
-
-# ###true values
-# sim_risks = np.array(sim_risks)
-# print(concordance_index(times, -sim_risks, events))
-# true_losses = []
-# for idx_test in test_idx:
-#     mask = np.ones(len(risks), dtype=bool)
-#     mask[idx_test] = False
-#     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': sim_risks[mask]}), 'T', 'E', formula='x')
-#     true_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': sim_risks[idx_test]})))
-# print(np.mean(true_losses))
 
 
 
