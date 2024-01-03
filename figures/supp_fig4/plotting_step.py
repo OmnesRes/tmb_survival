@@ -36,8 +36,21 @@ fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 ax.plot(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], linewidth=2, label='True', color='k')
-cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
+
+###cox
+cox_losses = []
+cox_risks = []
+for idx_test in test_idx:
+    mask = np.ones(len(tmb), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+    cox_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': tmb[idx_test]})))
+    cox_risks.append(tmb * cph.params_[0])
+print('cox')
+print(round(cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x').concordance_index_, 3))
+print(round(np.mean(cox_losses), 3))
+ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
+
 for model in ['FCN', 'sigmoid']:
     losses = []
     normed_risks = []
@@ -48,7 +61,8 @@ for model in ['FCN', 'sigmoid']:
         losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': risks[idx_test][:, 0]})))
         normed_risks.append(risks[:, 0] * cph.params_[0])
     print(np.mean(losses))
-    
+    concordance = concordance_index(times[np.concatenate(test_idx)], np.concatenate(results[model][0]), events[np.concatenate(test_idx)])
+    print(round(concordance, 3))
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
     ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=label_dict[model])
     
@@ -72,5 +86,16 @@ ax.set_title('Step Data')
 plt.legend(frameon=False, loc='upper center', ncol=5)
 plt.savefig(cwd / 'figures' / 'supp_fig4' / 'step_data.pdf')
 
+###true values
+print('true')
+sim_risks = np.array(sim_risks)
+print(round(concordance_index(times, -sim_risks, events), 3))
+true_losses = []
+for idx_test in test_idx:
+    mask = np.ones(len(risks), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': sim_risks[mask]}), 'T', 'E', formula='x')
+    true_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': sim_risks[idx_test]})))
+print(round(np.mean(true_losses), 3))
 
 
