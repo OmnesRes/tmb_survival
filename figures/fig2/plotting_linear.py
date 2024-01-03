@@ -18,11 +18,10 @@ import seaborn as sns
 t = utils.LogTransform(bias=4, min_x=0)
 
 tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
-times = np.array([i[0][4] for i in times_events])
-events = np.array([i[1][4] for i in times_events])
+times = np.array([i[0][0] for i in times_events])
+events = np.array([i[1][0] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'linear_data_runs_4.pkl', 'rb'))
-
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'linear_data_runs_0.pkl', 'rb'))
 
 cph = CoxPHFitter()
 
@@ -33,8 +32,16 @@ fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 ax.plot(tmb, sim_risks - np.mean(sim_risks), linewidth=2, label='True', color='k')
-cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-ax.plot(tmb, tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]), linewidth=2, alpha=.5, label='Cox')
+
+###cox
+cox_risks = []
+for idx_test in test_idx:
+    mask = np.ones(len(tmb), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+    cox_risks.append(tmb * cph.params_[0])
+ax.plot(tmb, np.mean([i - np.mean(i) for i in cox_risks], axis=0), linewidth=2, alpha=.5, label='Cox')
+
 for model in ['FCN']:
     losses = []
     normed_risks = []
@@ -47,8 +54,8 @@ for model in ['FCN']:
     print(np.mean(losses))
     
     overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
-    ax.plot(np.sort(tmb), overall_risks, linewidth=2, alpha=.5, label=model)
-    
+    ax.plot(tmb, overall_risks, linewidth=2, alpha=.5, label=model)
+
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 64])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 40, 64])
 ax.set_yticks([])
@@ -66,33 +73,5 @@ ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_title('Linear Data')
 plt.legend(frameon=False, loc='upper center', ncol=5)
-plt.savefig(cwd / 'figures' / 'fig2' / 'linear_data_4.pdf')
-
-
-
-
-# ###cox
-# cox_losses = []
-# for idx_test in test_idx:
-#     mask = np.ones(len(risks), dtype=bool)
-#     mask[idx_test] = False
-#     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
-#     cox_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': tmb[idx_test]})))
-# print(np.mean(cox_losses))
-
-# print(cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x').concordance_index_)
-
-
-# ###true values
-# sim_risks = np.array(sim_risks)
-# print(concordance_index(times, -sim_risks, events))
-# true_losses = []
-# for idx_test in test_idx:
-#     mask = np.ones(len(risks), dtype=bool)
-#     mask[idx_test] = False
-#     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': sim_risks[mask]}), 'T', 'E', formula='x')
-#     true_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': sim_risks[idx_test]})))
-# print(np.mean(true_losses))
-
-
-
+plt.show()
+plt.savefig(cwd / 'figures' / 'fig2' / 'linear_data_0.pdf')

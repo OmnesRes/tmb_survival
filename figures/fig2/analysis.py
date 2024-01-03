@@ -39,7 +39,7 @@ for model in results:
 ###cox
 cox_losses = []
 for idx_test in test_idx:
-    mask = np.ones(len(risks), dtype=bool)
+    mask = np.ones(len(tmb), dtype=bool)
     mask[idx_test] = False
     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
     cox_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': tmb[idx_test]})))

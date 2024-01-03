@@ -19,10 +19,10 @@ t = utils.LogTransform(bias=4, min_x=0)
 
 tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
 indexes = np.argsort(tmb)
-times = np.array([i[0][4] for i in times_events])
-events = np.array([i[1][4] for i in times_events])
+times = np.array([i[0][0] for i in times_events])
+events = np.array([i[1][0] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_runs_4.pkl', 'rb'))
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_runs_0.pkl', 'rb'))
 
 cph = CoxPHFitter()
 
@@ -33,8 +33,16 @@ fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
 ax.plot(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], linewidth=2, label='True', color='k')
-cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
+
+###cox
+cox_risks = []
+for idx_test in test_idx:
+    mask = np.ones(len(tmb), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+    cox_risks.append(tmb * cph.params_[0])
+ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
+
 for model in ['FCN']:
     losses = []
     normed_risks = []
@@ -64,32 +72,7 @@ ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
 ax.set_ylim(-.9, 1.75)
-ax.set_title('Nonmonotonic Data')
+ax.set_title('Non-monotonic Data')
 plt.legend(frameon=False, loc='upper center', ncol=5)
-plt.savefig(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_4.pdf')
-
-# ###cox
-# cox_losses = []
-# for idx_test in test_idx:
-#     mask = np.ones(len(risks), dtype=bool)
-#     mask[idx_test] = False
-#     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
-#     cox_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': tmb[idx_test]})))
-# print(np.mean(cox_losses))
-
-# print(cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x').concordance_index_)
-
-
-# ###true values
-# sim_risks = np.array(sim_risks)
-# print(concordance_index(times, -sim_risks, events))
-# true_losses = []
-# for idx_test in test_idx:
-#     mask = np.ones(len(risks), dtype=bool)
-#     mask[idx_test] = False
-#     cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': sim_risks[mask]}), 'T', 'E', formula='x')
-#     true_losses.append(cph.score(pd.DataFrame({'T': times[idx_test], 'E': events[idx_test], 'x': sim_risks[idx_test]})))
-# print(np.mean(true_losses))
-
-
+plt.savefig(cwd / 'figures' / 'fig2' / 'nonmonotonic_data_0.pdf')
 
