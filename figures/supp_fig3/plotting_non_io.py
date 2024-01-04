@@ -39,8 +39,14 @@ for cancer in ['NSCLC', 'Colorectal', 'Pancreatic', 'Endometrial']:
     fig.subplots_adjust(top=.95)
     fig.subplots_adjust(left=.04)
     fig.subplots_adjust(right=.98)
-    cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-    ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
+    ###cox
+    cox_risks = []
+    for idx_test in test_idx:
+        mask = np.ones(len(tmb), dtype=bool)
+        mask[idx_test] = False
+        cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+        cox_risks.append(tmb * cph.params_[0])
+    ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
     for model in ['FCN']:
         losses = []
         normed_risks = []

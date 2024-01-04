@@ -40,8 +40,14 @@ fig.subplots_adjust(bottom=.129)
 fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
-cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
+###cox
+cox_risks = []
+for idx_test in test_idx:
+    mask = np.ones(len(tmb), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+    cox_risks.append(tmb * cph.params_[0])
+ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
 for model in ['FCN']:
     losses = []
     normed_risks = []
@@ -75,9 +81,7 @@ plt.legend(frameon=False, loc='upper center', ncol=4)
 plt.savefig(cwd / 'figures' / 'supp_fig3' / 'melanoma_io.pdf')
 
 df = pd.read_csv(cwd / 'figures' / 'supp_fig3'/ 'data' / '41588_2018_312_MOESM3_ESM.csv', sep=',', low_memory=False, skiprows=1)
-##limit to Melanoma
 df = df.loc[df['Cancer.Type'] == 'Non-Small Cell Lung Cancer']
-##remove uveal
 sample_info = pd.read_csv(cwd / 'figures' / 'supp_fig3'/ 'data' / 'data_clinical_sample.txt', sep='\t', low_memory=False, skiprows=4)
 df = pd.merge(df, sample_info, left_on='Sample.ID', right_on='SAMPLE_ID')
 
@@ -96,8 +100,14 @@ fig.subplots_adjust(bottom=.129)
 fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
-cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
+###cox
+cox_risks = []
+for idx_test in test_idx:
+    mask = np.ones(len(tmb), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+    cox_risks.append(tmb * cph.params_[0])
+ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
 for model in ['FCN']:
     losses = []
     normed_risks = []
@@ -152,8 +162,14 @@ fig.subplots_adjust(bottom=.129)
 fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
-cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-ax.plot(np.sort(tmb), (tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]))[indexes], linewidth=2, alpha=.5, label='Cox')
+###cox
+cox_risks = []
+for idx_test in test_idx:
+    mask = np.ones(len(tmb), dtype=bool)
+    mask[idx_test] = False
+    cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+    cox_risks.append(tmb * cph.params_[0])
+ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
 for model in ['FCN']:
     losses = []
     normed_risks = []
