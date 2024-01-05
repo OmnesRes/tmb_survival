@@ -15,7 +15,8 @@ from model import utils
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LGG', 'LIHC', 'LUAD', 'LUSC', 'OV', 'PAAD', 'SKCM', 'STAD', 'UCEC']
+labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LGG', 'LIHC', 'LUAD', 'OV', 'PAAD', 'SKCM', 'STAD', 'UCEC']
+label_dict = {'COAD': 'COAD/READ', 'LUAD': 'LUAD/LUSC'}
 
 data = pickle.load(open(cwd / 'files' / 'data.pkl', 'rb'))
 samples = pickle.load(open(cwd / 'files' / 'tcga_public_sample_table.pkl', 'rb'))
@@ -25,6 +26,9 @@ tmb_dict = {i[:12]: data[i][0] / (data[i][1] / 1e6) for i in data}
 
 samples['tmb'] = samples.bcr_patient_barcode.apply(lambda x: tmb_dict.get(x, np.nan))
 samples.dropna(axis=0, subset=['OS', 'OS.time', 'tmb'], inplace=True)
+
+samples['type'] = samples['type'].apply(lambda x: 'COAD' if x == 'READ' else x)
+samples['type'] = samples['type'].apply(lambda x: 'LUAD' if x == 'LUSC' else x)
 
 t = utils.LogTransform(bias=4, min_x=0)
 cph = CoxPHFitter()
@@ -43,8 +47,6 @@ for cancer in labels_to_use:
     fig.subplots_adjust(top=.95)
     fig.subplots_adjust(left=.04)
     fig.subplots_adjust(right=.98)
-    cph.fit(pd.DataFrame({'T': times, 'E': events, 'x': tmb}), 'T', 'E', formula='x')
-    ax.plot(tmb, tmb * cph.params_[0] - np.mean(tmb * cph.params_[0]), linewidth=2, alpha=.5, label='Cox')
     for model in ['FCN']:
         test_idx, test_ranks, all_risks = pickle.load(open(cwd / 'figures' / 'fig3' / (model + '_runs.pkl'), 'rb'))[cancer]
         normed_risks = []
@@ -55,6 +57,15 @@ for cancer in labels_to_use:
             normed_risks.append(risks[:, 0] * cph.params_[0])
         overall_risks = np.mean([i - np.mean(i) for i in normed_risks], axis=0)
         indexes = np.argsort(tmb)
+        ##cox
+        cox_risks = []
+        for idx_test in test_idx:
+            mask = np.ones(len(tmb), dtype=bool)
+            mask[idx_test] = False
+            cph.fit(pd.DataFrame({'T': times[mask], 'E': events[mask], 'x': tmb[mask]}), 'T', 'E', formula='x')
+            cox_risks.append(tmb * cph.params_[0])
+        ax.plot(np.sort(tmb), np.mean([i - np.mean(i) for i in cox_risks], axis=0)[indexes], linewidth=2, alpha=.5, label='Cox')
+        ##FCN
         ax.plot(np.sort(tmb), overall_risks[indexes], linewidth=2, alpha=.5, label=model)
     if max(t.inv(tmb) > 128):
         ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 80, 160, 256])))
@@ -115,7 +126,7 @@ for cancer in labels_to_use:
     ax.spines['left'].set_linewidth(1)
     ax.set_xlabel('TMB', fontsize=12)
     ax.set_ylabel('Log Partial Hazard', fontsize=12)
-    ax.set_title(cancer)
+    ax.set_title(label_dict.get(cancer, cancer))
     sns.rugplot(data=tmb, ax=ax, alpha=.5, color='k')
     plt.legend(frameon=False, loc='upper center', ncol=4)
     plt.savefig(cwd / 'figures' / 'fig3' / (cancer + '.pdf'))

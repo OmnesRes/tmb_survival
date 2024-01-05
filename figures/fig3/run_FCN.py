@@ -20,7 +20,7 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[-2], True)
 tf.config.experimental.set_visible_devices(physical_devices[-2], 'GPU')
 
-labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LAML', 'LGG', 'LIHC', 'LUAD', 'LUSC', 'OV', 'PAAD', 'SARC', 'SKCM', 'STAD', 'UCEC']
+labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LAML', 'LGG', 'LIHC', 'LUAD', 'OV', 'PAAD', 'SARC', 'SKCM', 'STAD', 'UCEC']
 
 data = pickle.load(open(cwd / 'files' / 'data.pkl', 'rb'))
 samples = pickle.load(open(cwd / 'files' / 'tcga_public_sample_table.pkl', 'rb'))
@@ -30,6 +30,9 @@ tmb_dict = {i[:12]: data[i][0] / (data[i][1] / 1e6) for i in data}
 
 samples['tmb'] = samples.bcr_patient_barcode.apply(lambda x: tmb_dict.get(x, np.nan))
 samples.dropna(axis=0, subset=['OS', 'OS.time', 'tmb'], inplace=True)
+
+samples['type'] = samples['type'].apply(lambda x: 'COAD' if x == 'READ' else x)
+samples['type'] = samples['type'].apply(lambda x: 'LUAD' if x == 'LUSC' else x)
 
 results = {}
 t = utils.LogTransform(bias=4, min_x=0)

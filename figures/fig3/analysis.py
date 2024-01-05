@@ -14,7 +14,7 @@ import pickle
 from model import utils
 from matplotlib import pyplot as plt
 
-labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LAML', 'LGG', 'LIHC', 'LUAD', 'LUSC', 'OV', 'PAAD', 'SARC', 'SKCM', 'STAD', 'UCEC']
+labels_to_use = ['BLCA', 'CESC', 'COAD', 'ESCA', 'GBM', 'HNSC', 'KIRC', 'KIRP', 'LAML', 'LGG', 'LIHC', 'LUAD', 'OV', 'PAAD', 'SARC', 'SKCM', 'STAD', 'UCEC']
 
 data = pickle.load(open(cwd / 'files' / 'data.pkl', 'rb'))
 samples = pickle.load(open(cwd / 'files' / 'tcga_public_sample_table.pkl', 'rb'))
@@ -24,6 +24,9 @@ tmb_dict = {i[:12]: data[i][0] / (data[i][1] / 1e6) for i in data}
 
 samples['tmb'] = samples.bcr_patient_barcode.apply(lambda x: tmb_dict.get(x, np.nan))
 samples.dropna(axis=0, subset=['OS', 'OS.time', 'tmb'], inplace=True)
+
+samples['type'] = samples['type'].apply(lambda x: 'COAD' if x == 'READ' else x)
+samples['type'] = samples['type'].apply(lambda x: 'LUAD' if x == 'LUSC' else x)
 
 t = utils.LogTransform(bias=4, min_x=0)
 
@@ -36,7 +39,7 @@ for cancer in labels_to_use:
     tmb = t.trf(df.tmb.values)
     times = df['OS.time'].values
     events = df['OS'].values
-    for model in ['FCN', '2neuron', 'sigmoid']:
+    for model in ['FCN']:
         print(model)
         test_idx, test_ranks, all_risks = pickle.load(open(cwd / 'figures' / 'fig3' / (model + '_runs.pkl'), 'rb'))[cancer]
         concordance = concordance_index(times[np.concatenate(test_idx)], np.concatenate(test_ranks), events[np.concatenate(test_idx)])
