@@ -36,26 +36,6 @@ class Activations:
                                             lower_asymptote=self.lower_asymptote, upper_asymptote=self.upper_asymptote,
                                             lower_alpha=tf.exp(self.lower_alpha), upper_alpha=tf.exp(self.upper_alpha))
 
-    class ARU(tf.keras.layers.Layer):
-        def __init__(self, trainable=True, alpha_init=0., bias_init=None):
-            super(Activations.ARU, self).__init__()
-            self.trainable = trainable
-            self.alpha_init = alpha_init
-            self.alpha = None
-            self.bias_init = bias_init
-            self.bias = None
-
-        @staticmethod
-        def activation_function(x, alpha):
-            return (x + ((alpha + (x ** 2)) ** (1 / 2))) / 2
-
-        def build(self, input_shape):
-            self.alpha = self.add_weight(shape=[input_shape[-1], ], initializer=tf.keras.initializers.constant(self.alpha_init), dtype=tf.float32, trainable=self.trainable)
-            if self.bias_init is not None:
-                self.bias = self.add_weight(shape=[input_shape[-1], ], initializer=tf.keras.initializers.constant(self.bias_init), dtype=tf.float32, trainable=True)
-
-        def call(self, inputs, **kwargs):
-            return self.activation_function(inputs + self.bias if self.bias is not None else inputs, alpha=tf.exp(self.alpha))
 
 class Losses:
     class CoxPH(tf.keras.losses.Loss):
