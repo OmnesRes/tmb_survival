@@ -1,5 +1,6 @@
 import numpy as np
 
+#adopted from https://github.com/sebp/survival-cnn-estimator
 def generate_times(n=100, mean_time=6000, risk=0, prob_censored=.5):
     risk_score = np.full(n, risk)
     baseline_hazard = 1 / mean_time
