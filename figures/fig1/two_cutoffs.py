@@ -61,8 +61,5 @@ for choice in range(15):
 with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_linear.pkl', 'wb') as f:
     pickle.dump(best_indexes, f)
 
-with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
-    pickle.dump(best_indexes, f)
-
-with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_step.pkl', 'wb') as f:
-    pickle.dump(best_indexes, f)
+# with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
+#     pickle.dump(best_indexes, f)

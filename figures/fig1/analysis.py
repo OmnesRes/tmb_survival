@@ -99,7 +99,7 @@ ax.text(1.15, 1.03, '<= TMB', transform=ax.transAxes)
 for index, i in enumerate(single):
     ax.text(1, 1 - ((index + 1) / len(y_indexes)) + .03, round(i[2], 1), transform=ax.transAxes)
     ax.text(1.3, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[3]), 2), transform=ax.transAxes)
-plt.savefig(cwd / 'figures' / 'fig1' / 'nonmonotonic_single.pdf')
+plt.savefig(cwd / 'figures' / 'fig1' / 'linear_single.pdf')
 
 
 y_indexes = list(range(len(double)))[::-1]
@@ -138,4 +138,4 @@ for index, i in enumerate(double):
     ax.text(1, 1 - ((index + 1) / len(y_indexes)) + .03, round(i[2], 1), transform=ax.transAxes)
     ax.text(1.15, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[3]), 2), transform=ax.transAxes)
     ax.text(1.3, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[4]), 2), transform=ax.transAxes)
-plt.savefig(cwd / 'figures' / 'fig1' / 'nonmonotonic_double.pdf')
+plt.savefig(cwd / 'figures' / 'fig1' / 'linear_double.pdf')
