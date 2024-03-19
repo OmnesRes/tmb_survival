@@ -67,22 +67,35 @@ labels_to_use = list(range(1, 16))
 y_indexes = list(range(len(single)))[::-1]
 fig = plt.figure()
 ax = fig.add_subplot(111)
-fig.subplots_adjust(bottom=.12)
-fig.subplots_adjust(top=.94)
-fig.subplots_adjust(left=.087)
+fig.subplots_adjust(bottom=.07)
+fig.subplots_adjust(top=.89)
+fig.subplots_adjust(left=.13)
 fig.subplots_adjust(right=.74)
 fig.subplots_adjust(wspace=0)
 
-for index, i in enumerate(single):
-    ax.hlines(y_indexes[index], np.log2(np.exp(i[0] - 1.96 * i[1])), np.log2(np.exp(i[0] + 1.96 * i[1])))
-    ax.vlines(np.log2(np.exp(i[0] - 1.96 * i[1])), y_indexes[index] - .2, y_indexes[index] + .2)
-    ax.vlines(np.log2(np.exp(i[0] + 1.96 * i[1])), y_indexes[index] - .2, y_indexes[index] + .2)
-    ax.scatter(np.log2(np.exp(i[0])), y_indexes[index], color='#1f77b4', s=50)
-ax.vlines(np.log2(1), -1, max(y_indexes) + .5, color='k', alpha=.3, zorder=-100, linewidths=1)
+for index, (i, j) in enumerate(zip(single, double)):
+    if index == 0:
+        ax.hlines(y_indexes[index] - (1 / len(labels_to_use)), np.log2(np.exp(i[0] - 1.96 * i[1])), np.log2(np.exp(i[0] + 1.96 * i[1])), label='Single Cutoff')
+    else:
+        ax.hlines(y_indexes[index] - (1 / len(labels_to_use)), np.log2(np.exp(i[0] - 1.96 * i[1])), np.log2(np.exp(i[0] + 1.96 * i[1])))
+    ax.vlines(np.log2(np.exp(i[0] - 1.96 * i[1])), y_indexes[index] - .2 - (1 / len(labels_to_use)), y_indexes[index] + .2 - (1 / len(labels_to_use)))
+    ax.vlines(np.log2(np.exp(i[0] + 1.96 * i[1])), y_indexes[index] - .2 - (1 / len(labels_to_use)), y_indexes[index] + .2 - (1 / len(labels_to_use)))
+    ax.scatter(np.log2(np.exp(i[0])), y_indexes[index] - (1 / len(labels_to_use)), color='#1f77b4', s=50, zorder=1000)
+    
+    if index == 0:
+        ax.hlines(y_indexes[index] + (1 / len(labels_to_use)), np.log2(np.exp(j[0] - 1.96 * j[1])), np.log2(np.exp(j[0] + 1.96 * j[1])), color='#d62728', label='Double Cutoff')
+    else:
+        ax.hlines(y_indexes[index] + (1 / len(labels_to_use)), np.log2(np.exp(j[0] - 1.96 * j[1])), np.log2(np.exp(j[0] + 1.96 * j[1])), color='#d62728')
+    ax.vlines(np.log2(np.exp(j[0] - 1.96 * j[1])), y_indexes[index] - .2 + (1 / len(labels_to_use)), y_indexes[index] + .2 + (1 / len(labels_to_use)), color='#d62728')
+    ax.vlines(np.log2(np.exp(j[0] + 1.96 * j[1])), y_indexes[index] - .2 + (1 / len(labels_to_use)), y_indexes[index] + .2 + (1 / len(labels_to_use)), color='#d62728')
+    ax.scatter(np.log2(np.exp(j[0])), y_indexes[index] + (1 / len(labels_to_use)), color='#d62728', s=50, zorder=1000)
+
+    
+ax.vlines(np.log2(1), -1, max(y_indexes) + .25, color='k', alpha=.3, zorder=-100, linewidths=1)
 ax.set_xticks(np.log2(np.array([.125, .25, .5, 1, 2, 4, 8])))
 ax.set_xticklabels([.125, .25, .5, 1.0, 2.0, 4.0, 8.0])
 ax.set_yticks(y_indexes)
-ax.set_yticklabels(labels_to_use)
+ax.set_yticklabels([])
 ax.tick_params(axis='y', length=0, labelsize=10, pad=10)
 ax.tick_params(axis='x', length=8, width=1, direction='out', labelsize=10)
 ax.spines['top'].set_visible(False)
@@ -91,51 +104,25 @@ ax.spines['left'].set_visible(False)
 ax.spines['bottom'].set_bounds(np.log2(0.125), np.log2(8))
 ax.spines['bottom'].set_position(['outward', -1])
 ax.spines['bottom'].set_linewidth(1)
-ax.set_ylim(-1, max(y_indexes) + .25)
+ax.set_ylim(-.75, max(y_indexes) + .5)
 ax.set_xlim(np.log2(0.0625), np.log2(16))
-ax.text(1, 1.03, 'LL-test', transform=ax.transAxes)
-ax.text(1.15, 1.03, '<= TMB', transform=ax.transAxes)
+ax.text(-.2, 1.04, 'LL-test', transform=ax.transAxes)
+ax.text(-.05, 1.04, '<= TMB', transform=ax.transAxes)
 
 for index, i in enumerate(single):
-    ax.text(1, 1 - ((index + 1) / len(y_indexes)) + .03, round(i[2], 1), transform=ax.transAxes)
-    ax.text(1.3, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[3]), 2), transform=ax.transAxes)
-plt.savefig(cwd / 'figures' / 'fig1' / 'linear_single.pdf')
+    ax.text(-.18, 1 - ((index + 1) / len(y_indexes)) + .03, round(i[2], 1), transform=ax.transAxes)
+    ax.text(-.02, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[3]), 2), transform=ax.transAxes)
 
 
-y_indexes = list(range(len(double)))[::-1]
-fig = plt.figure()
-ax = fig.add_subplot(111)
-fig.subplots_adjust(bottom=.12)
-fig.subplots_adjust(top=.94)
-fig.subplots_adjust(left=.087)
-fig.subplots_adjust(right=.74)
-fig.subplots_adjust(wspace=0)
-
-for index, i in enumerate(double):
-    ax.hlines(y_indexes[index], np.log2(np.exp(i[0] - 1.96 * i[1])), np.log2(np.exp(i[0] + 1.96 * i[1])))
-    ax.vlines(np.log2(np.exp(i[0] - 1.96 * i[1])), y_indexes[index] - .2, y_indexes[index] + .2)
-    ax.vlines(np.log2(np.exp(i[0] + 1.96 * i[1])), y_indexes[index] - .2, y_indexes[index] + .2)
-    ax.scatter(np.log2(np.exp(i[0])), y_indexes[index], color='#1f77b4', s=50)
-ax.vlines(np.log2(1), -1, max(y_indexes) + .5, color='k', alpha=.3, zorder=-100, linewidths=1)
-ax.set_xticks(np.log2(np.array([.125, .25, .5, 1, 2, 4, 8])))
-ax.set_xticklabels([.125, .25, .5, 1.0, 2.0, 4.0, 8.0])
-ax.set_yticks(y_indexes)
-ax.set_yticklabels(labels_to_use)
-ax.tick_params(axis='y', length=0, labelsize=10, pad=10)
-ax.tick_params(axis='x', length=8, width=1, direction='out', labelsize=10)
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_bounds(np.log2(0.125), np.log2(8))
-ax.spines['bottom'].set_position(['outward', -1])
-ax.spines['bottom'].set_linewidth(1)
-ax.set_ylim(-1, max(y_indexes) + .25)
-ax.set_xlim(np.log2(0.0625), np.log2(16))
-ax.text(1, 1.03, 'LL-test', transform=ax.transAxes)
-ax.text(1.15, 1.03, '<= TMB <=', transform=ax.transAxes)
+ax.text(1, 1.04, 'LL-test', transform=ax.transAxes)
+ax.text(1.15, 1.04, '<= TMB <=', transform=ax.transAxes)
 
 for index, i in enumerate(double):
     ax.text(1, 1 - ((index + 1) / len(y_indexes)) + .03, round(i[2], 1), transform=ax.transAxes)
     ax.text(1.15, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[3]), 2), transform=ax.transAxes)
     ax.text(1.3, 1 - ((index + 1) / len(y_indexes)) + .03, round(t.inv(i[4]), 2), transform=ax.transAxes)
-plt.savefig(cwd / 'figures' / 'fig1' / 'linear_double.pdf')
+
+plt.legend(ncol=2, frameon=False, loc=(-.2, 1.08), columnspacing=25)
+plt.savefig(cwd / 'figures' / 'fig1' / 'linear.pdf')
+
+
