@@ -13,9 +13,9 @@ from lifelines.statistics import logrank_test
 import pickle
 
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
+# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
 # tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
-
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'new_nonmonotonic_data.pkl', 'rb'))
 
 ##need to sort
 indexes = np.argsort(tmb)
@@ -43,7 +43,7 @@ for choice in range(15):
     offset = 25
     offset2 = 50
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=10) as executor:
         for index, result in tqdm(zip(range(len(tmb[offset: -(offset + offset2 - 1)])), executor.map(get_statistic, range(len(tmb[offset: -(offset + offset2 - 1)]))))):
             stats[index] = result
 
@@ -58,8 +58,11 @@ for choice in range(15):
     best_indexes[choice] = [index, index2]
 
 
-with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_linear.pkl', 'wb') as f:
-    pickle.dump(best_indexes, f)
+# with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_linear.pkl', 'wb') as f:
+    # pickle.dump(best_indexes, f)
 
 # with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
 #     pickle.dump(best_indexes, f)
+
+with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_new_nonmonotonic.pkl', 'wb') as f:
+    pickle.dump(best_indexes, f)

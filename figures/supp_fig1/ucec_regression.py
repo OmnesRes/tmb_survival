@@ -155,7 +155,7 @@ def get_statistic(index):
                                   ).test_statistic)
     return stats
 
-stats = {}
+
 offset = 25
 offset2 = 50
 
@@ -172,19 +172,40 @@ for i in stats:
 index = max_index
 index2 = np.argmax(stats[max_index])
 
-#index=15
-#index2=255
+# index=15
+# index2=255
 
 samples['mid'] = samples['tmb'].apply(lambda x: ((x >= tmb[index + offset + 1]) and (x <= tmb[index + offset + offset2 + index2])).astype(np.int16))
 
 kmf = KaplanMeierFitter()
 fig = plt.figure()
+fig.subplots_adjust(bottom=.11)
+fig.subplots_adjust(top=.95)
+fig.subplots_adjust(left=.115)
+fig.subplots_adjust(right=.95)
 ax = fig.add_subplot(111)
-kmf.fit(samples.loc[samples['high'] == False]['OS.time'].values, samples.loc[samples['high'] == False]['OS'].values, label='Low TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5})
-kmf.fit(samples.loc[samples['high'] == True]['OS.time'].values, samples.loc[samples['high'] == True]['OS'].values, label='High TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5})
+kmf.fit(samples.loc[samples['high'] == False]['OS.time'].values, samples.loc[samples['high'] == False]['OS'].values, label='Low TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5}, color='#1f77b4')
+kmf.fit(samples.loc[samples['high'] == True]['OS.time'].values, samples.loc[samples['high'] == True]['OS'].values, label='High TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5}, color='#d62728')
+kmf.fit(samples.loc[samples['mid'] == False]['OS.time'].values, samples.loc[samples['mid'] == False]['OS'].values, label='Moderate TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5, "alpha":.5}, color='#d62728', alpha=.5)
+kmf.fit(samples.loc[samples['mid'] == True]['OS.time'].values, samples.loc[samples['mid'] == True]['OS'].values, label='Extreme TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5, "alpha":.5}, color='#1f77b4', alpha=.5)
+ax.set_ylim(0, 1.05)
+ax.tick_params(axis='x', length=7, width=1, direction='out', labelsize=12)
+ax.tick_params(axis='y', length=7, width=1, direction='out', labelsize=12)
+ax.set_yticklabels([0, 20, 40, 60, 80, 100])
+ax.set_xticks(np.arange(0, 8000, 1000))
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_linewidth(1)
+ax.spines['left'].set_linewidth(1)
+ax.spines['bottom'].set_bounds(0, 7000)
+ax.spines['left'].set_bounds(0, 1)
+ax.set_xlabel('Days', fontsize=12)
+ax.set_ylabel('% Surviving', fontsize=12)
+plt.legend(frameon=False)
+plt.savefig(cwd / 'figures' / 'supp_fig1' / ('kaplan.pdf'))
 
-kmf.fit(samples.loc[samples['mid'] == False]['OS.time'].values, samples.loc[samples['mid'] == False]['OS'].values, label='Moderate TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5})
-kmf.fit(samples.loc[samples['mid'] == True]['OS.time'].values, samples.loc[samples['mid'] == True]['OS'].values, label='Extreme TMB').plot_survival_function(ax=ax, show_censors=True, ci_alpha=0, censor_styles={"marker": "|", "ms":5})
+
+
 
 
 
