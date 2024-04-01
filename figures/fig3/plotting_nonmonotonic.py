@@ -17,12 +17,12 @@ import seaborn as sns
 
 t = utils.LogTransform(bias=4, min_x=0)
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'new_nonmonotonic_data.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pkl', 'rb'))
 indexes = np.argsort(tmb)
 times = np.array([i[0][0] for i in times_events])
 events = np.array([i[1][0] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig3' / 'new_nonmonotonic_data_runs_0.pkl', 'rb'))
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig3' / 'nonmonotonic_data_runs_0.pkl', 'rb'))
 
 cph = CoxPHFitter()
 
