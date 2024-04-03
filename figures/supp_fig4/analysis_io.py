@@ -18,11 +18,11 @@ t = utils.LogTransform(bias=4, min_x=0)
 cph = CoxPHFitter()
 
 #from: https://www.nature.com/articles/s41588-018-0312-8
-df = pd.read_csv(cwd / 'figures' / 'supp_fig2'/ 'data' / '41588_2018_312_MOESM3_ESM.csv', sep=',', low_memory=False, skiprows=1)
+df = pd.read_csv(cwd / 'figures' / 'supp_fig4'/ 'data' / '41588_2018_312_MOESM3_ESM.csv', sep=',', low_memory=False, skiprows=1)
 ##limit to Melanoma
 df = df.loc[df['Cancer.Type'] == 'Melanoma']
 ##remove uveal
-sample_info = pd.read_csv(cwd / 'figures' / 'supp_fig2'/ 'data' / 'data_clinical_sample.txt', sep='\t', low_memory=False, skiprows=4)
+sample_info = pd.read_csv(cwd / 'figures' / 'supp_fig4'/ 'data' / 'data_clinical_sample.txt', sep='\t', low_memory=False, skiprows=4)
 df = pd.merge(df, sample_info, left_on='Sample.ID', right_on='SAMPLE_ID')
 df = df.loc[~(df['CANCER_TYPE_DETAILED'] == 'Uveal Melanoma')]
 
