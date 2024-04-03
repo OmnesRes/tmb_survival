@@ -17,12 +17,11 @@ import seaborn as sns
 
 t = utils.LogTransform(bias=4, min_x=0)
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pkl', 'rb'))
-indexes = np.argsort(tmb)
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'linear_data.pkl', 'rb'))
 times = np.array([i[0][0] for i in times_events])
 events = np.array([i[1][0] for i in times_events])
 
-test_idx, results = pickle.load(open(cwd / 'figures' / 'fig3' / 'nonmonotonic_data_runs_0.pkl', 'rb'))
+test_idx, results = pickle.load(open(cwd / 'figures' / 'fig3' / 'linear_data_runs_0.pkl', 'rb'))
 
 cph = CoxPHFitter()
 
@@ -32,12 +31,11 @@ fig.subplots_adjust(bottom=.129)
 fig.subplots_adjust(top=.95)
 fig.subplots_adjust(left=.04)
 fig.subplots_adjust(right=1)
-ax.plot(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], linewidth=2, label='True', color='k')
-ax.scatter(np.sort(tmb), (sim_risks - np.mean(sim_risks))[indexes], color='#1f77b4', alpha=.3)
+ax.plot(tmb, sim_risks - np.mean(sim_risks), linewidth=2, label='True', color='k')
+ax.scatter(tmb, sim_risks - np.mean(sim_risks), color='#1f77b4', alpha=.3)
 
 for model in ['FCN']:
     losses = []
-    normed_risks = []
     for index, (idx_test, risks) in enumerate(zip(test_idx, results[model][1])):
         mask = np.ones(len(risks), dtype=bool)
         mask[idx_test] = False
@@ -46,7 +44,6 @@ for model in ['FCN']:
         normed_risks = (risks[:, 0] * cph.params_[0])
         ax.plot(tmb, normed_risks - np.mean(normed_risks), linewidth=2, alpha=.5, label='Fold' + str(index + 1))
 
-    
 ax.set_xticks(t.trf(np.array([0, 2, 5, 10, 20, 40, 64])))
 ax.set_xticklabels([0, 2, 5, 10, 20, 40, 64])
 ax.set_yticks([])
@@ -62,8 +59,6 @@ ax.spines['bottom'].set_bounds(t.trf(0), t.trf(64))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Normalized Log Partial Hazard', fontsize=12)
 sns.rugplot(data=tmb, ax=ax, alpha=.5, color='#1f77b4')
-ax.set_ylim(-1.5, 1.5)
-ax.set_title('Non-monotonic Data')
+ax.set_title('Linear Data')
 plt.legend(frameon=False, loc='upper center', ncol=5)
-plt.savefig(cwd / 'figures' / 'supp_fig2' / 'nonmonotonic_data_0.pdf')
-
+plt.savefig(cwd / 'figures' / 'supp_fig2' / 'linear_data_0.pdf')
