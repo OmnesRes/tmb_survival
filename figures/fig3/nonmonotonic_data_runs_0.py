@@ -18,9 +18,9 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[-1], True)
 tf.config.experimental.set_visible_devices(physical_devices[-1], 'GPU')
 
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'new_nonmonotonic_data.pkl', 'rb'))
-times = np.array([i[0][14] for i in times_events])
-events = np.array([i[1][14] for i in times_events])
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pkl', 'rb'))
+times = np.array([i[0][0] for i in times_events])
+events = np.array([i[1][0] for i in times_events])
 tmb = tmb[:, np.newaxis]
 cancer_strat = np.zeros_like(tmb) ##no cancer info
 y_label = np.stack(np.concatenate([times[:, np.newaxis], events[:, np.newaxis], cancer_strat], axis=-1))
@@ -76,5 +76,5 @@ for idx_train, idx_test in StratifiedKFold(n_splits=10, random_state=0, shuffle=
 results['FCN'] = [test_ranks, all_risks]
 
 
-with open(cwd / 'figures' / 'fig3' / 'new_nonmonotonic_data_runs_14.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'fig3' / 'nonmonotonic_data_runs_0.pkl', 'wb') as f:
     pickle.dump([test_idx, results], f)
