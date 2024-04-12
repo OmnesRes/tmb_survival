@@ -48,7 +48,7 @@ ax.spines['bottom'].set_bounds(0, 1000)
 ax.spines['left'].set_bounds(np.log2(1), np.log2(257))
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Counts', fontsize=12)
-plt.savefig(cwd / 'figures' / 'supp_fig1' / 'histogram.pdf')
+plt.savefig(cwd / 'figures' / 'fig1' / 'histogram.pdf')
 
 cph = CoxPHFitter()
 cph.fit(samples, duration_col='OS.time', event_col='OS', formula="tmb")
@@ -73,7 +73,7 @@ ax.spines['left'].set_position(['outward', 5])
 ax.spines['bottom'].set_position(['outward', 5])
 ax.spines['left'].set_bounds(.7, 1)
 ax.legend(frameon=False, title='TMB', ncol=5)
-plt.savefig(cwd / 'figures' / 'supp_fig1' / 'survival_curves.pdf')
+plt.savefig(cwd / 'figures' / 'fig1' / 'survival_curves.pdf')
 
 
 t = utils.LogTransform(bias=4, min_x=0)
@@ -100,7 +100,7 @@ ax.spines['bottom'].set_bounds(0, t.trf(1000))
 ax.spines['left'].set_bounds(0, 90)
 ax.set_xlabel('TMB', fontsize=12)
 ax.set_ylabel('Counts', fontsize=12)
-plt.savefig(cwd / 'figures' / 'supp_fig1' / 'log_histogram.pdf')
+plt.savefig(cwd / 'figures' / 'fig1' / 'log_histogram.pdf')
 
 cph = CoxPHFitter()
 samples['tmb'] = tmb
@@ -126,7 +126,7 @@ ax.spines['left'].set_position(['outward', 5])
 ax.spines['bottom'].set_position(['outward', 5])
 ax.spines['left'].set_bounds(.7, 1)
 ax.legend(frameon=False, title='TMB', ncol=5)
-plt.savefig(cwd / 'figures' / 'supp_fig1' / 'log_survival_curves.pdf')
+plt.savefig(cwd / 'figures' / 'fig1' / 'log_survival_curves.pdf')
 
 
 ##single cutoff
@@ -202,7 +202,7 @@ ax.spines['left'].set_bounds(0, 1)
 ax.set_xlabel('Days', fontsize=12)
 ax.set_ylabel('% Surviving', fontsize=12)
 plt.legend(frameon=False)
-plt.savefig(cwd / 'figures' / 'supp_fig1' / ('kaplan.pdf'))
+plt.savefig(cwd / 'figures' / 'fig1' / ('kaplan.pdf'))
 
 
 
