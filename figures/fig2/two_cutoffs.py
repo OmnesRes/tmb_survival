@@ -57,8 +57,8 @@ for choice in range(15):
     best_indexes[choice] = [index, index2]
 
 
-# with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_linear.pkl', 'wb') as f:
+# with open(cwd / 'figures' / 'fig2' / 'two_cutoffs_linear.pkl', 'wb') as f:
     # pickle.dump(best_indexes, f)
 
-with open(cwd / 'figures' / 'fig1' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'fig2' / 'two_cutoffs_nonmonotonic.pkl', 'wb') as f:
     pickle.dump(best_indexes, f)

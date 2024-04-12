@@ -14,13 +14,13 @@ import pandas as pd
 from lifelines.statistics import logrank_test
 import pickle
 
-# two_cutoffs = pickle.load(open(cwd / 'figures' / 'fig1' / 'two_cutoffs_linear.pkl', 'rb'))
-# single_cutoff = pickle.load(open(cwd / 'figures' / 'fig1' / 'single_cutoff_linear.pkl', 'rb'))
-# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'linear_data.pkl', 'rb'))
+# two_cutoffs = pickle.load(open(cwd / 'figures' / 'fig2' / 'two_cutoffs_linear.pkl', 'rb'))
+# single_cutoff = pickle.load(open(cwd / 'figures' / 'fig2' / 'single_cutoff_linear.pkl', 'rb'))
+# tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'linear_data.pkl', 'rb'))
 
-two_cutoffs = pickle.load(open(cwd / 'figures' / 'fig1' / 'two_cutoffs_nonmonotonic.pkl', 'rb'))
-single_cutoff = pickle.load(open(cwd / 'figures' / 'fig1' / 'single_cutoff_nonmonotonic.pkl', 'rb'))
-tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig1' / 'nonmonotonic_data.pkl', 'rb'))
+two_cutoffs = pickle.load(open(cwd / 'figures' / 'fig2' / 'two_cutoffs_nonmonotonic.pkl', 'rb'))
+single_cutoff = pickle.load(open(cwd / 'figures' / 'fig2' / 'single_cutoff_nonmonotonic.pkl', 'rb'))
+tmb, sim_risks, times_events = pickle.load(open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pkl', 'rb'))
 
 indexes = np.argsort(tmb)
 tmb = np.sort(tmb)

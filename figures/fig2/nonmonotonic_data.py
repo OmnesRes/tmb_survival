@@ -43,7 +43,7 @@ plt.show()
 
 times_events = [generate_times(risk=i, mean_time=6000) for i in sim_risks]
 
-with open(cwd / 'figures' / 'fig1' / 'new_nonmonotonic_data2.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'fig2' / 'nonmonotonic_data.pkl', 'wb') as f:
     pickle.dump([tmb, sim_risks, times_events], f)
 
 

@@ -37,8 +37,8 @@ for choice in range(15):
     best_index[choice] = cutoff
 
 
-# with open(cwd / 'figures' / 'fig1' / 'single_cutoff_linear.pkl', 'wb') as f:
+# with open(cwd / 'figures' / 'fig2' / 'single_cutoff_linear.pkl', 'wb') as f:
     # pickle.dump(best_index, f)
    
-with open(cwd / 'figures' / 'fig1' / 'single_cutoff_nonmonotonic.pkl', 'wb') as f:
+with open(cwd / 'figures' / 'fig2' / 'single_cutoff_nonmonotonic.pkl', 'wb') as f:
     pickle.dump(best_index, f)
